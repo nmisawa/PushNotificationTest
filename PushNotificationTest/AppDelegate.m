@@ -70,7 +70,7 @@
 
     if ([identifier isEqualToString:@"ACCEPT_IDENTIFIER"]) {
         // ...
-    } else if ([identifier isEqualToString:@"MAYBE_IDENTIFIER"]) {
+    } else if ([identifier isEqualToString:@"DECLINE_IDENTIFIER"]) {
         // ...
     }
     
@@ -85,7 +85,7 @@
 - (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
     if ([identifier isEqualToString:@"ACCEPT_IDENTIFIER"]) {
         // ...
-    } else if ([identifier isEqualToString:@"MAYBE_IDENTIFIER"]) {
+    } else if ([identifier isEqualToString:@"DECLINE_IDENTIFIER"]) {
         // ...
     }
     
@@ -107,7 +107,7 @@
 {
     // Actionの生成
     UIMutableUserNotificationAction *acceptAction = [[UIMutableUserNotificationAction alloc] init];
-    acceptAction.identifier = @"ACCEPT";
+    acceptAction.identifier = @"ACCEPT_IDENTIFIER";
     acceptAction.title = @"Accept";
     acceptAction.activationMode = UIUserNotificationActivationModeForeground;
     acceptAction.authenticationRequired = NO;
@@ -115,7 +115,7 @@
     
     // Actionの生成
     UIMutableUserNotificationAction *declineAction = [[UIMutableUserNotificationAction alloc] init];
-    acceptAction.identifier = @"DECLINE";
+    acceptAction.identifier = @"DECLINE_IDENTIFIER";
     acceptAction.title = @"Decline";
     acceptAction.activationMode = UIUserNotificationActivationModeBackground;
     acceptAction.authenticationRequired = NO;
