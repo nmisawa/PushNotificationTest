@@ -99,7 +99,7 @@
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
     
     // user has allowed receiving user notifications of the following types
-    [application registerForRemoteNotifications];
+//    [application registerForRemoteNotifications];
 }
 
 // Notificationの設定
@@ -115,11 +115,11 @@
     
     // Actionの生成
     UIMutableUserNotificationAction *declineAction = [[UIMutableUserNotificationAction alloc] init];
-    acceptAction.identifier = @"DECLINE_IDENTIFIER";
-    acceptAction.title = @"Decline";
-    acceptAction.activationMode = UIUserNotificationActivationModeBackground;
-    acceptAction.authenticationRequired = NO;
-    acceptAction.destructive = YES;
+    declineAction.identifier = @"DECLINE_IDENTIFIER";
+    declineAction.title = @"Decline";
+    declineAction.activationMode = UIUserNotificationActivationModeBackground;
+    declineAction.authenticationRequired = NO;
+    declineAction.destructive = NO;
     
     // Categoryの作成
     UIMutableUserNotificationCategory *inviteCategory = [[UIMutableUserNotificationCategory alloc] init];
@@ -127,20 +127,20 @@
     [inviteCategory setActions:@[acceptAction, declineAction] forContext:UIUserNotificationActionContextDefault]; // ダイアログ表示
     [inviteCategory setActions:@[acceptAction, declineAction] forContext:UIUserNotificationActionContextMinimal]; // バナー表示
     
-    NSSet *categories = [NSSet setWithObjects:inviteCategory, nil];
-    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:categories];
-    [application registerUserNotificationSettings:notificationSettings];
+//    NSSet *categories = [NSSet setWithObjects:inviteCategory, nil];
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:[NSSet setWithObject:inviteCategory]];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
 }
 
 // LocalNotificationを送信
 - (void)sendLocalNotificationForMessage:(NSString *)message
 {
     UILocalNotification *localNotification = [UILocalNotification new];
+    localNotification.category = @"INVITE_CATEGORY"; // Action表示させたいCategoryの設定
     localNotification.alertBody = message;
     localNotification.fireDate = [NSDate date];
     localNotification.timeZone = [NSTimeZone localTimeZone];
     localNotification.soundName = UILocalNotificationDefaultSoundName;
-    localNotification.category = @"INVITE_CATEGORY"; // Action表示させたいCategoryの設定
     [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
