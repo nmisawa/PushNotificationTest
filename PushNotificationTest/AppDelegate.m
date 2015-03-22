@@ -17,6 +17,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        [self registerUserNotificationSettings:application];
+    }
+
     return YES;
 }
 
@@ -28,6 +33,17 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    UILocalNotification* localNotif = [UILocalNotification new];
+    localNotif.alertAction = NSLocalizedString( @"OK", @"応答" );
+    localNotif.alertBody = @"Notification...";
+    localNotif.soundName = UILocalNotificationDefaultSoundName;
+    localNotif.category = @"INVITE_CATEGORY";
+    //    localNotif.fireDate = [ NSDate new ];
+    //    localNotif.timeZone = [NSTimeZone systemTimeZone];
+    
+    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -40,6 +56,101 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    // プッシュ通知が利用不可であればerrorが返ってくる
+    NSLog(@"error: %@", error);
+}
+
+- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void(^)(NSDictionary *replyInfo))reply
+{
+    [self sendLocalNotificationForMessage:@"TEST"];
+}
+
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
+
+    if ([identifier isEqualToString:@"ACCEPT_IDENTIFIER"]) {
+        // ...
+    } else if ([identifier isEqualToString:@"MAYBE_IDENTIFIER"]) {
+        // ...
+    }
+    
+    
+    if (completionHandler) {
+        completionHandler();
+    }
+
+
+}
+    
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler {
+    if ([identifier isEqualToString:@"ACCEPT_IDENTIFIER"]) {
+        // ...
+    } else if ([identifier isEqualToString:@"MAYBE_IDENTIFIER"]) {
+        // ...
+    }
+    
+    
+    if (completionHandler) {
+        completionHandler();
+    }
+    
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    
+    // user has allowed receiving user notifications of the following types
+    [application registerForRemoteNotifications];
+}
+
+// Notificationの設定
+- (void)registerUserNotificationSettings:(UIApplication *)application
+{
+    // Actionの生成
+    UIMutableUserNotificationAction *acceptAction = [[UIMutableUserNotificationAction alloc] init];
+    acceptAction.identifier = @"ACCEPT";
+    acceptAction.title = @"Accept";
+    acceptAction.activationMode = UIUserNotificationActivationModeForeground;
+    acceptAction.authenticationRequired = NO;
+    acceptAction.destructive = NO;
+    
+    // Actionの生成
+    UIMutableUserNotificationAction *declineAction = [[UIMutableUserNotificationAction alloc] init];
+    acceptAction.identifier = @"DECLINE";
+    acceptAction.title = @"Decline";
+    acceptAction.activationMode = UIUserNotificationActivationModeBackground;
+    acceptAction.authenticationRequired = NO;
+    acceptAction.destructive = YES;
+    
+    // Categoryの作成
+    UIMutableUserNotificationCategory *inviteCategory = [[UIMutableUserNotificationCategory alloc] init];
+    inviteCategory.identifier = @"INVITE_CATEGORY"; // CategoryのIDを設定
+    [inviteCategory setActions:@[acceptAction, declineAction] forContext:UIUserNotificationActionContextDefault]; // ダイアログ表示
+    [inviteCategory setActions:@[acceptAction, declineAction] forContext:UIUserNotificationActionContextMinimal]; // バナー表示
+    
+    NSSet *categories = [NSSet setWithObjects:inviteCategory, nil];
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:categories];
+    [application registerUserNotificationSettings:notificationSettings];
+}
+
+// LocalNotificationを送信
+- (void)sendLocalNotificationForMessage:(NSString *)message
+{
+    UILocalNotification *localNotification = [UILocalNotification new];
+    localNotification.alertBody = message;
+    localNotification.fireDate = [NSDate date];
+    localNotification.timeZone = [NSTimeZone localTimeZone];
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+    localNotification.category = @"INVITE_CATEGORY"; // Action表示させたいCategoryの設定
+    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
 @end
