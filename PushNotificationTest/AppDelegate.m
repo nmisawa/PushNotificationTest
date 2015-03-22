@@ -34,15 +34,7 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
-    UILocalNotification* localNotif = [UILocalNotification new];
-    localNotif.alertAction = NSLocalizedString( @"OK", @"応答" );
-    localNotif.alertBody = @"Notification...";
-    localNotif.soundName = UILocalNotificationDefaultSoundName;
-    localNotif.category = @"INVITE_CATEGORY";
-    //    localNotif.fireDate = [ NSDate new ];
-    //    localNotif.timeZone = [NSTimeZone systemTimeZone];
-    
-    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotif];
+    [self sendLocalNotificationForMessage:@"TEST"];
 
 }
 
@@ -71,7 +63,6 @@
 
 - (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void(^)(NSDictionary *replyInfo))reply
 {
-    [self sendLocalNotificationForMessage:@"TEST"];
 }
 
 
